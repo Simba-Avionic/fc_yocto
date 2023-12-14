@@ -1,0 +1,6 @@
+[submodule "meta-ti"]
+	path = meta-ti
+	url = https://git.yoctoproject.org/meta-ti
+[submodule "meta-simba"]
+	path = meta-simba
+	url = git@github.com:Simba-Avionic/meta-simba.git
