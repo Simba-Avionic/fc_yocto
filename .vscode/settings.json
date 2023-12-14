@@ -1,0 +1,10 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/bartek/poky/bitbake/lib"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/bartek/poky/bitbake/lib"
+    ],
+    "bitbake.pathToBitbakeFolder": "${workspaceFolder}/bitbake",
+    "bitbake.pathToEnvScript": "${workspaceFolder}/oe-init-build-env"
+}
