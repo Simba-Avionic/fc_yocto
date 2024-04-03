@@ -4,3 +4,11 @@
 [submodule "meta-simba"]
 	path = meta-simba
 	url = git@github.com:Simba-Avionic/meta-simba.git
+[submodule "meta-arm"]
+	path = meta-arm
+	url = git://git.yoctoproject.org/meta-arm
+	branch = mickledore
+[submodule "meta-openembedded"]
+	path = meta-openembedded
+	url = git@github.com:openembedded/meta-openembedded.git
+	branch = mickledore
