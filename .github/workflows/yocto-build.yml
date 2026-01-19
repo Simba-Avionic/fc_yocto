@@ -1,0 +1,54 @@
+name: yocto-build
+
+on:
+  workflow_dispatch:
+    inputs:
+      image:
+        description: "BitBake image target to build"
+        required: false
+        default: "core-image-minimal"
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    env:
+      IMAGE: ${{ inputs.image || 'core-image-minimal' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install host tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            chrpath gawk lz4 git python3 python3-pip diffstat texinfo \
+            gcc g++ make wget unzip xz-utils cpio file bc bison flex \
+            libssl-dev
+
+      - name: Cache downloads and sstate
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/downloads
+            build/sstate-cache
+          key: ${{ runner.os }}-yocto-${{ hashFiles('build/conf/*.conf', 'meta-myboard/**', 'meta-yocto-bsp/**', 'meta/**') }}
+          restore-keys: |
+            ${{ runner.os }}-yocto-
+
+      - name: Build kernel and image
+        shell: bash
+        run: |
+          set -euo pipefail
+          set --
+          source oe-init-build-env build
+          bitbake -c clean virtual/kernel
+          bitbake virtual/kernel
+          bitbake "${IMAGE}"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: yocto-images
+          path: build/tmp/deploy/images/
