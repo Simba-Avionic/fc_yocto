@@ -6,7 +6,7 @@ on:
       image:
         description: "BitBake image target to build"
         required: false
-        default: "core-image-minimal"
+        default: "fc-image"
   push:
     branches: [simba]
   pull_request:
@@ -16,7 +16,7 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     env:
-      IMAGE: ${{ inputs.image || 'core-image-minimal' }}
+      IMAGE: ${{ inputs.image || 'fc-image' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -24,6 +24,7 @@ jobs:
           fetch-depth: 0
           recursive: true
           submodules: true
+          branch: simba
 
       - name: Clean previous build images
         run: |
@@ -59,6 +60,7 @@ jobs:
           set -eo pipefail
           set --
           source oe-init-build-env build
+          echo 'BB_NO_NETWORK = "0"' >> conf/local.conf
           bitbake -c cleansstate virtual/kernel
           bitbake virtual/kernel
           bitbake "${IMAGE}"
