@@ -30,20 +30,6 @@ jobs:
         run: |
           rm -rf build/tmp/deploy/images/
 
-      - name: Install host tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential chrpath cpio debianutils diffstat file gawk gcc git \
-            iputils-ping libacl1 locales python3 python3-git python3-jinja2 \
-            python3-pexpect python3-pip python3-subunit socat texinfo unzip \
-            wget xz-utils zstd lz4 bc bison flex libssl-dev
-
-      - name: Ensure en_US.UTF-8 locale
-        run: |
-          sudo locale-gen en_US.UTF-8
-          sudo update-locale LANG=en_US.UTF-8
-
       - name: Cache downloads and sstate
         uses: actions/cache@v4
         with:
