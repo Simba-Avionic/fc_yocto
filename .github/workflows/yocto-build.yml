@@ -8,9 +8,9 @@ on:
         required: false
         default: "core-image-minimal"
   push:
-    branches: [master]
+    branches: [simba]
   pull_request:
-    branches: [master]
+    branches: [simba]
 
 jobs:
   build:
