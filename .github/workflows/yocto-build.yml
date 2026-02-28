@@ -59,8 +59,8 @@ jobs:
         run: |
           set -eo pipefail
           set --
+          export BBSERVER=""
           source oe-init-build-env build
-          echo 'BB_NO_NETWORK = "0"' >> conf/local.conf
           bitbake -c cleansstate virtual/kernel
           bitbake virtual/kernel
           bitbake "${IMAGE}"
