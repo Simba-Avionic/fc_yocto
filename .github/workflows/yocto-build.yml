@@ -9,6 +9,8 @@ on:
         default: "core-image-minimal"
   push:
     branches: [master]
+  pull_request:
+    branches: [master]
 
 jobs:
   build:
