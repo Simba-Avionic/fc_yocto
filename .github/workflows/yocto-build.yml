@@ -14,7 +14,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted
     env:
       IMAGE: ${{ inputs.image || 'fc-image' }}
     steps:
