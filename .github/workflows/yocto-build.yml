@@ -1,0 +1,78 @@
+name: yocto-build
+on:
+  workflow_dispatch:
+    inputs:
+      image:
+        description: "BitBake image target to build"
+        required: false
+        default: "fc-image"
+  push:
+    branches: [simba]
+  pull_request:
+    branches: [simba]
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    env:
+      IMAGE: ${{ inputs.image || 'fc-image' }}
+      LANG: en_US.UTF-8
+      LC_ALL: en_US.UTF-8
+      LANGUAGE: en_US.UTF-8
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          recursive: true
+          submodules: true
+          branch: simba
+
+      - name: Clean previous build images
+        shell: bash
+        run: |
+          rm -rf build/tmp/deploy/images/
+
+      - name: Ensure locales are installed
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y locales
+          sudo locale-gen en_US.UTF-8
+          sudo update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+          export LANG=en_US.UTF-8
+          export LC_ALL=en_US.UTF-8
+          export LANGUAGE=en_US.UTF-8
+          locale
+
+      - name: Cache downloads and sstate
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/downloads
+            build/sstate-cache
+          key: ${{ runner.os }}-yocto-${{ hashFiles('build/conf/*.conf', 'meta-myboard/**', 'meta-yocto-bsp/**', 'meta/**') }}
+          restore-keys: |
+            ${{ runner.os }}-yocto-
+
+
+      - name: Build Yocto image
+        shell: bash
+        run: |
+          set -eo pipefail
+          export LANG=en_US.UTF-8
+          export LC_ALL=en_US.UTF-8
+          export LANGUAGE=en_US.UTF-8
+          export BBSERVER=""
+          source oe-init-build-env build
+          bitbake -c cleansstate virtual/kernel
+          bitbake virtual/kernel
+          bitbake "${IMAGE}"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: yocto-images
+          path: build/tmp/deploy/images/
