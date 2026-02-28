@@ -19,7 +19,11 @@ jobs:
       IMAGE: ${{ inputs.image || 'core-image-minimal' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          recursive: true
+          submodules: true
 
       - name: Clean previous build images
         run: |
