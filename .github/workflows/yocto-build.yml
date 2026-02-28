@@ -1,5 +1,4 @@
 name: yocto-build
-
 on:
   workflow_dispatch:
     inputs:
@@ -15,10 +14,15 @@ on:
 jobs:
   build:
     runs-on: self-hosted
+
     env:
       IMAGE: ${{ inputs.image || 'fc-image' }}
+      LANG: en_US.UTF-8
+      LC_ALL: en_US.UTF-8
+      LANGUAGE: en_US.UTF-8
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
@@ -27,13 +31,10 @@ jobs:
           branch: simba
 
       - name: Clean previous build images
+        shell: bash
         run: |
           rm -rf build/tmp/deploy/images/
 
-      - name: Ensure en_US.UTF-8 locale
-        run: |
-          export LANG=en_US.UTF-8
-          export LC_ALL=en_US.UTF-8
 
       - name: Cache downloads and sstate
         uses: actions/cache@v4
@@ -45,11 +46,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yocto-
 
-      - name: Build kernel and image
+
+      - name: Build Yocto image
         shell: bash
         run: |
           set -eo pipefail
-          set --
+          export LANG=en_US.UTF-8
+          export LC_ALL=en_US.UTF-8
+          export LANGUAGE=en_US.UTF-8
           export BBSERVER=""
           source oe-init-build-env build
           bitbake -c cleansstate virtual/kernel
